@@ -82,7 +82,6 @@ endif ()
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN true)
 
-
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
@@ -112,3 +111,25 @@ add_subdirectory(tools/xmlValidator)
 add_subdirectory(bindings)
 
 add_subdirectory(doc)
+
+set(CPACK_PAKARGE_VERSION "3.0.0")
+set(CPACK_PAKARGE_VERSION_MAJOR "3")
+set(CPACK_PAKARGE_VERSION_MINOR "0")
+set(CPACK_PAKARGE_VERSION_PATCH "0")
+set(CPACK_PACKAGE_NAME parameter-framework)
+set(CPACK_PACKAGE_VENDOR "Intel")
+set(CPACK_PACKAGE_MAINTAINER "David Wagner")
+
+string(TOLOWER "${CPACK_PACKAGE_NAME}" CPACK_PACKAGE_NAME_LOWERCASE)
+set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME_LOWERCASE}_${CPACK_PAKARGE_VERSION}")
+
+
+if (WIN32)
+    # Install MSVC system Libraries
+    include(InstallRequiredSystemLibraries)
+else ()
+    # Linux specific for packaging shared Libraries
+    set(CPACK_PACKAGE_SHLIBDEPS ON)
+endif()
+
+include(CPack)

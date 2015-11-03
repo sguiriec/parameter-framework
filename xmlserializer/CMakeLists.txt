@@ -79,3 +79,10 @@ install(FILES
     XmlElement.h
     XmlSerializingContext.h
     DESTINATION "include/xmlserializer")
+
+if (WIN32)
+    install(FILES
+        ${LIBXML2_INCLUDE_DIR}/../../bin/libxml2.dll DESTINATION bin)
+    install(FILES
+		${LIBXML2_LIBRARIES} DESTINATION lib)
+endif()
