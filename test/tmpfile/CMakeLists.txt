@@ -1,4 +1,5 @@
 # Copyright (c) 2015, Intel Corporation
+# Copyright (c) 2018, Renault s.a.s
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
@@ -31,6 +32,7 @@ if(BUILD_TESTING)
         set(OS_SPECIFIC_TMPFILE windows/TmpFile.cpp)
     else ()
         set(OS_SPECIFIC_TMPFILE posix/TmpFile.cpp)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DRW_PATH='\"\"' ")
     endif ()
 
     add_library(tmpfile STATIC ${OS_SPECIFIC_TMPFILE})

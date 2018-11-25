@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2015, Intel Corporation
+ * Copyright (c) 2018, Renault s.a.s
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -42,7 +43,7 @@ std::string TmpFile::mktmp()
 {
     using std::string;
 
-    char path[] = "Tmp_ParameterFramework_XXXXXX";
+    char path[] = RW_PATH "Tmp_ParameterFramework_XXXXXX";
     int fd = mkstemp(path);
     if (fd == -1) {
         throwErrnoError("Could not create tmp file with pattern \"" + string(path) + '"');

@@ -1,4 +1,5 @@
 # Copyright (c) 2015, Intel Corporation
+# Copyright (c) 2018, Renault s.a.s
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
@@ -47,6 +48,8 @@ if(BUILD_TESTING)
                    AutoSync.cpp)
 
     find_package(LibXml2 REQUIRED)
+
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPLUGIN_NAME='\"introspection-subsystem\"' -DPLUGIN_PATH='\"\"' ")
 
     target_link_libraries(parameterFunctionalTest
                           PRIVATE parameter

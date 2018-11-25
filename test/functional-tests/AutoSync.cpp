@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2015, Intel Corporation
+ * Copyright (c) 2018, Renault s.a.s
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -30,11 +31,14 @@
 
 #include "Config.hpp"
 #include "ParameterFramework.hpp"
+#include "DynamicLibrary.hpp"
 #include <SubsystemObject.h>
 #include <IntrospectionEntryPoint.h>
 #include "Test.hpp"
 #include <catch.hpp>
 #include <string>
+#include <iostream>
+#include "Memory.hpp"
 
 using std::string;
 
@@ -53,12 +57,27 @@ struct BoolPF : public ParameterFramework
         setConfigurationParameter("Domain", "Conf", "/test/test/param", valueStr);
     }
 
+    bool getParameterValue()
+    {
+        typedef bool (*GetParamFunc)();
+
+        std::string subystemName(PLUGIN_PATH);
+        if (not subystemName.empty()) {
+            subystemName += "/";
+        }
+        subystemName += std::string(PLUGIN_NAME);
+
+        auto library = ::utility::make_unique<DynamicLibrary>(subystemName);
+        auto getParamFunc = library->getSymbol<GetParamFunc>("getParameterValue");
+        return getParamFunc();
+    }
+
 private:
     static Config createConfig()
     {
         Config config;
         config.instances = R"(<BooleanParameter Name="param" Mapping="Object"/>)";
-        config.plugins = {{"", {"introspection-subsystem"}}};
+        config.plugins = {{PLUGIN_PATH, {PLUGIN_NAME}}};
         config.subsystemType = "INTROSPECTION";
 
         config.domains = R"(<ConfigurableDomain Name="Domain">
@@ -91,7 +110,7 @@ SCENARIO_METHOD(BoolPF, "Auto sync")
         REQUIRE_NOTHROW(start());
 
         THEN ("Parameter value is false according to the settings") {
-            REQUIRE_FALSE(introspectionSubsystem::getParameterValue());
+            REQUIRE_FALSE(getParameterValue());
 
             AND_THEN ("Tuning is off") {
                 REQUIRE_FALSE(isTuningModeOn());
@@ -103,7 +122,7 @@ SCENARIO_METHOD(BoolPF, "Auto sync")
                         REQUIRE_NOTHROW(setParameterValue(true));
 
                         THEN ("Sync is done") {
-                            CHECK(introspectionSubsystem::getParameterValue());
+                            CHECK(getParameterValue());
                         }
                     }
                 }
@@ -114,13 +133,13 @@ SCENARIO_METHOD(BoolPF, "Auto sync")
                         REQUIRE_NOTHROW(setParameterValue(true));
 
                         THEN ("Sync should not have occurred yet") {
-                            REQUIRE_FALSE(introspectionSubsystem::getParameterValue());
+                            REQUIRE_FALSE(getParameterValue());
 
                             WHEN ("Turning autosync on") {
                                 REQUIRE_NOTHROW(setAutoSync(true));
 
                                 THEN ("Sync is done") {
-                                    CHECK(introspectionSubsystem::getParameterValue());
+                                    CHECK(getParameterValue());
                                 }
                             }
                         }
