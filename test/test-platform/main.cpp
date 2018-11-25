@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2011-2014, Intel Corporation
+ * Copyright (c) 2018, Renault s.a.s
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -41,11 +42,11 @@ using std::cerr;
 using std::endl;
 using std::string;
 
-static const uint16_t defaultPortNumber = 5001;
+static const std::string defaultBindAddress("5001");
 
 static void showUsage()
 {
-    cerr << "test-platform [-h|--help] <file path> [port number, default " << defaultPortNumber
+    cerr << "test-platform [-h|--help] <file path> [port number, default " << defaultBindAddress
          << "]" << endl;
 }
 
@@ -87,14 +88,16 @@ int main(int argc, char *argv[])
     options.pop_front();
 
     // Handle optional port number argument
-    uint16_t portNumber = defaultPortNumber;
+    auto bindAddress = defaultBindAddress;
 
     if (not options.empty()) {
+        uint16_t portNumber;
         if (not convertTo(options.front(), portNumber)) {
             showInvalidUsage("Could not convert \"" + options.front() +
                              "\" to a socket port number.");
             return 2;
         };
+        bindAddress = options.front();
         options.pop_front();
     }
 
@@ -105,7 +108,7 @@ int main(int argc, char *argv[])
     }
 
     string strError;
-    if (!CTestPlatform(filePath, portNumber).run(strError)) {
+    if (!CTestPlatform(filePath, bindAddress).run(strError)) {
 
         cerr << "Test-platform error:" << strError.c_str() << endl;
         return -1;

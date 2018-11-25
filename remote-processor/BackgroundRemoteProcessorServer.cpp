@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2016, Intel Corporation
+ * Copyright (c) 2018, Renault s.a.s
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -31,8 +32,8 @@
 #include "RemoteProcessorServer.h"
 
 BackgroundRemoteProcessorServer::BackgroundRemoteProcessorServer(
-    uint16_t uiPort, std::unique_ptr<IRemoteCommandHandler> &&commandHandler)
-    : _server(new CRemoteProcessorServer(uiPort)), mCommandHandler(std::move(commandHandler))
+    std::string bindAddress, std::unique_ptr<IRemoteCommandHandler> &&commandHandler)
+    : _server(new CRemoteProcessorServer(bindAddress)), mCommandHandler(std::move(commandHandler))
 {
 }
 

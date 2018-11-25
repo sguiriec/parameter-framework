@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2011-2016, Intel Corporation
+ * Copyright (c) 2018, Renault s.a.s
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -129,7 +130,7 @@ using namespace core;
 
 // Used for remote processor server creation
 typedef IRemoteProcessorServerInterface *(*CreateRemoteProcessorServer)(
-    uint16_t uiPort, IRemoteCommandHandler *pCommandHandler);
+    std::string bindAddress, IRemoteCommandHandler *pCommandHandler);
 
 // Config File System looks normally like this:
 // ---------------------------------------------
@@ -2852,11 +2853,12 @@ bool CParameterMgr::handleRemoteProcessingInterface(string &strError)
         return true;
     }
 
-    auto port = getConstFrameworkConfiguration()->getServerPort();
+    auto bindAddress = getConstFrameworkConfiguration()->getServerBindAddress();
 
     try {
         // The ownership of remoteComandHandler is given to Bg remote processor server.
-        _pRemoteProcessorServer = new BackgroundRemoteProcessorServer(port, createCommandHandler());
+        _pRemoteProcessorServer =
+            new BackgroundRemoteProcessorServer(bindAddress, createCommandHandler());
     } catch (std::runtime_error &e) {
         strError = string("ParameterMgr: Unable to create Remote Processor Server: ") + e.what();
         return false;
@@ -2869,11 +2871,11 @@ bool CParameterMgr::handleRemoteProcessingInterface(string &strError)
 
     if (!_pRemoteProcessorServer->start(strError)) {
         ostringstream oss;
-        oss << "ParameterMgr: Unable to start remote processor server on port " << port;
+        oss << "ParameterMgr: Unable to start remote processor server on " << bindAddress;
         strError = oss.str() + ": " + strError;
         return false;
     }
-    info() << "Remote Processor Server started on port " << port;
+    info() << "Remote Processor Server started on " << bindAddress;
     return true;
 }
 

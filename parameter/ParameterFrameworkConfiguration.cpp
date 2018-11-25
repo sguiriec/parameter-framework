@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2011-2014, Intel Corporation
+ * Copyright (c) 2018, Renault s.a.s
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -53,10 +54,10 @@ bool CParameterFrameworkConfiguration::isTuningAllowed() const
     return _bTuningAllowed;
 }
 
-// Server port
-uint16_t CParameterFrameworkConfiguration::getServerPort() const
+// Server bind address
+const std::string &CParameterFrameworkConfiguration::getServerBindAddress() const
 {
-    return _uiServerPort;
+    return _bindAddress;
 }
 
 // From IXmlSink
@@ -70,7 +71,7 @@ bool CParameterFrameworkConfiguration::fromXml(const CXmlElement &xmlElement,
     xmlElement.getAttribute("TuningAllowed", _bTuningAllowed);
 
     // Server port
-    xmlElement.getAttribute("ServerPort", _uiServerPort);
+    xmlElement.getAttribute("ServerPort", _bindAddress);
 
     // Base
     return base::fromXml(xmlElement, serializingContext);

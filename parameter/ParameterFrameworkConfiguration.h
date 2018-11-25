@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2011-2014, Intel Corporation
+ * Copyright (c) 2018, Renault s.a.s
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -43,7 +44,7 @@ public:
     bool isTuningAllowed() const;
 
     // Server port
-    uint16_t getServerPort() const;
+    const std::string &getServerBindAddress() const;
 
     // From IXmlSink
     bool fromXml(const CXmlElement &xmlElement,
@@ -58,5 +59,5 @@ private:
     // Tuning allowed
     bool _bTuningAllowed{false};
     // Server port
-    uint16_t _uiServerPort{0};
+    std::string _bindAddress;
 };

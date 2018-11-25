@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2011-2014, Intel Corporation
+ * Copyright (c) 2018, Renault s.a.s
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -45,7 +46,7 @@ class CTestPlatform
     typedef CCommandHandler::CommandStatus CommandReturn;
 
 public:
-    CTestPlatform(const std::string &strclass, uint16_t iPortNumber);
+    CTestPlatform(const std::string &strclass, std::string bindAddress);
     virtual ~CTestPlatform();
 
     // Init

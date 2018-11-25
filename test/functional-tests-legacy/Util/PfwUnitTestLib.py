@@ -1,6 +1,7 @@
 # -*-coding:utf-8 -*
 
 # Copyright (c) 2011-2015, Intel Corporation
+# Copyright (c) 2018, Renault s.a.s
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
@@ -74,18 +75,18 @@ class Pfw(RemoteCli):
 
 class Hal(RemoteCli):
     # Arbitrary choosen port, try to avoid conflicting with IANA registered ports
-    testPlatformPort = 18444
-    platform_command = ["remote-process", "localhost", str(testPlatformPort)]
+    testPlatformBindAddress = "18444"
+    platform_command = ["remote-process", "localhost", testPlatformBindAddress]
 
     def __init__(self, pfw):
         self.pfw = pfw
 
     # Starts the HAL exe
     def startHal(self):
-        cmd= ["test-platform", os.environ["PFW_TEST_CONFIGURATION"], str(self.testPlatformPort)]
+        cmd= ["test-platform", os.environ["PFW_TEST_CONFIGURATION"], self.testPlatformBindAddress]
         self.setRemoteProcess(subprocess.Popen(cmd))
         # Wait for the test-platform listening socket
-        while socket.socket().connect_ex(("localhost", self.testPlatformPort)) != 0:
+        while socket.socket().connect_ex(("localhost", int(self.testPlatformBindAddress))) != 0:
             assert self.remoteProcess.poll() == None, "Test platform has failed to start. Return code: %s" % self.remoteProcess.returncode
             time.sleep(0.01)
 

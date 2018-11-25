@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2011-2014, Intel Corporation
+ * Copyright (c) 2018, Renault s.a.s
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -40,7 +41,7 @@ class REMOTE_PROCESSOR_EXPORT BackgroundRemoteProcessorServer final
     : public IRemoteProcessorServerInterface
 {
 public:
-    BackgroundRemoteProcessorServer(uint16_t uiPort,
+    BackgroundRemoteProcessorServer(std::string bindAddress,
                                     std::unique_ptr<IRemoteCommandHandler> &&commandHandler);
 
     ~BackgroundRemoteProcessorServer() override;

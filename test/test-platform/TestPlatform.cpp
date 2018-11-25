@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2011-2015, Intel Corporation
+ * Copyright (c) 2018, Renault s.a.s
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -38,8 +39,8 @@
 
 using std::string;
 
-CTestPlatform::CTestPlatform(const string &strClass, uint16_t iPortNumber)
-    : mParameterMgrPlatformConnector(strClass), mLogger(), mRemoteProcessorServer(iPortNumber)
+CTestPlatform::CTestPlatform(const string &strClass, std::string bindAddress)
+    : mParameterMgrPlatformConnector(strClass), mLogger(), mRemoteProcessorServer(bindAddress)
 {
     mParameterMgrPlatformConnector.setLogger(&mLogger);
 }
