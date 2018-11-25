@@ -33,6 +33,7 @@
 #include <memory>
 #include <assert.h>
 #include <string.h>
+#include <unistd.h>
 #include "RequestMessage.h"
 #include "AnswerMessage.h"
 #include "RemoteCommandHandler.h"
@@ -63,7 +64,7 @@ bool CRemoteProcessorServer::start(string &error)
         if (convertTo(_bindAddress, port)) {
             endpoint = ip::tcp::endpoint(ip::tcp::v6(), port);
         } else {
-            throw std::invalid_argument("unable to convert bind Address: " + _bindAddress);
+            endpoint = local::stream_protocol::endpoint(_bindAddress);
         }
 
         _acceptor.open(endpoint.protocol());
@@ -74,6 +75,7 @@ bool CRemoteProcessorServer::start(string &error)
         _acceptor.set_option(socket_base::linger(true, 0));
         _acceptor.set_option(socket_base::enable_connection_aborted(true));
 
+        unlink(_bindAddress.c_str());
         _acceptor.bind(endpoint);
         _acceptor.listen();
     } catch (std::exception &e) {

@@ -46,7 +46,7 @@ static const std::string defaultBindAddress("5001");
 
 static void showUsage()
 {
-    cerr << "test-platform [-h|--help] <file path> [port number, default " << defaultBindAddress
+    cerr << "test-platform [-h|--help] <file path> [bind address, default " << defaultBindAddress
          << "]" << endl;
 }
 
@@ -87,16 +87,10 @@ int main(int argc, char *argv[])
     auto filePath = options.front();
     options.pop_front();
 
-    // Handle optional port number argument
+    // Handle optional bind address argument
     auto bindAddress = defaultBindAddress;
 
     if (not options.empty()) {
-        uint16_t portNumber;
-        if (not convertTo(options.front(), portNumber)) {
-            showInvalidUsage("Could not convert \"" + options.front() +
-                             "\" to a socket port number.");
-            return 2;
-        };
         bindAddress = options.front();
         options.pop_front();
     }
@@ -104,7 +98,7 @@ int main(int argc, char *argv[])
     // All arguments should have been consumed
     if (not options.empty()) {
         showInvalidUsage("Unexpected extra arguments: " + utility::asString(options));
-        return 3;
+        return 2;
     }
 
     string strError;

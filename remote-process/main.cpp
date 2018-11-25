@@ -38,6 +38,7 @@
 #include "RequestMessage.h"
 #include "AnswerMessage.h"
 #include "Socket.h"
+#include "convert.hpp"
 
 using namespace std;
 
@@ -74,42 +75,70 @@ bool sendAndDisplayCommand(asio::generic::stream_protocol::socket &socket,
     return true;
 }
 
-// hostname port command [argument[s]]
+// <hostname port|path> command [argument[s]]
 // or
-// hostname port < commands
+// <hostname port|path> < commands
 int main(int argc, char *argv[])
 {
+    int commandPos;
+
     // Enough args?
-    if (argc < 4) {
+    if (argc < 3) {
 
         cerr << "Missing arguments" << endl;
         cerr << "Usage: " << endl;
         cerr << "Send a single command:" << endl;
-        cerr << "\t" << argv[0] << " hostname port command [argument[s]]" << endl;
+        cerr << "\t" << argv[0] << " <hostname port|path> <command> [argument[s]]" << endl;
 
         return 1;
     }
     asio::io_service io_service;
-    asio::ip::tcp::resolver resolver(io_service);
-
     asio::generic::stream_protocol::socket connectionSocket(io_service);
-    asio::ip::tcp::socket tcpSocket(io_service);
 
-    string host{argv[1]};
-    string port{argv[2]};
+    bool isInet = false;
     try {
-        asio::connect(tcpSocket, resolver.resolve(asio::ip::tcp::resolver::query(host, port)));
-        connectionSocket = std::move(tcpSocket);
+        string host{argv[1]};
+        string port{argv[2]};
+        uint16_t testConverter;
+
+        isInet = convertTo(port, testConverter);
+        if (isInet) {
+            asio::ip::tcp::resolver resolver(io_service);
+            asio::ip::tcp::socket tcpSocket(io_service);
+
+            asio::connect(tcpSocket, resolver.resolve(asio::ip::tcp::resolver::query(host, port)));
+            connectionSocket = std::move(tcpSocket);
+
+            commandPos = 3;
+        } else {
+            string path{argv[1]};
+
+            asio::generic::stream_protocol::socket socket(io_service);
+            asio::generic::stream_protocol::endpoint endpoint =
+                asio::local::stream_protocol::endpoint(path);
+            socket.connect(endpoint);
+            connectionSocket = std::move(socket);
+
+            commandPos = 2;
+        }
+
     } catch (const asio::system_error &e) {
-        cerr << "Connection to '" << host << ":" << port << "' failed: " << e.what() << endl;
+        string endpoint;
+
+        if (isInet) {
+            endpoint = string("tcp://") + argv[1] + ":" + argv[2];
+        } else { /* unix */
+            endpoint = string("unix://") + argv[1];
+        }
+        cerr << "Connection to '" << endpoint << "' failed: " << e.what() << endl;
         return 1;
     }
 
     // Create command message
-    CRequestMessage requestMessage(argv[3]);
+    CRequestMessage requestMessage(argv[commandPos]);
 
     // Add arguments
-    for (int arg = 4; arg < argc; arg++) {
+    for (int arg = commandPos + 1; arg < argc; arg++) {
 
         requestMessage.addArgument(argv[arg]);
     }
