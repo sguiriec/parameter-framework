@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2016, Intel Corporation
+ * Copyright (c) 2018, Renault s.a.s
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -29,19 +30,19 @@
  */
 #include <asio.hpp>
 
-/** Wraps and hides asio::ip::tcp::socket
+/** Wraps and hides asio::generic::stream_protocol::socket
  *
- * asio::ip::tcp::socket cannot be forward-declared because it is an
+ * asio::generic::stream_protocol::socket cannot be forward-declared because it is an
  * inner-class. This class wraps the asio class in order for it to be
  * forward-declared and avoid it to leak in client interfaces.
  */
 class Socket
 {
 public:
-    Socket(asio::ip::tcp::socket &socket) : mSocket(socket) {}
+    Socket(asio::generic::stream_protocol::socket &socket) : mSocket(socket) {}
 
-    asio::ip::tcp::socket &get() { return mSocket; }
+    asio::generic::stream_protocol::socket &get() { return mSocket; }
 
 private:
-    asio::ip::tcp::socket &mSocket;
+    asio::generic::stream_protocol::socket &mSocket;
 };

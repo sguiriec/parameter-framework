@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2011-2014, Intel Corporation
+ * Copyright (c) 2018, Renault s.a.s
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -40,7 +41,8 @@
 
 using namespace std;
 
-bool sendAndDisplayCommand(asio::ip::tcp::socket &socket, CRequestMessage &requestMessage)
+bool sendAndDisplayCommand(asio::generic::stream_protocol::socket &socket,
+                           CRequestMessage &requestMessage)
 {
     string strError;
 
@@ -87,16 +89,17 @@ int main(int argc, char *argv[])
 
         return 1;
     }
-    using asio::ip::tcp;
     asio::io_service io_service;
-    tcp::resolver resolver(io_service);
+    asio::ip::tcp::resolver resolver(io_service);
 
-    tcp::socket connectionSocket(io_service);
+    asio::generic::stream_protocol::socket connectionSocket(io_service);
+    asio::ip::tcp::socket tcpSocket(io_service);
 
     string host{argv[1]};
     string port{argv[2]};
     try {
-        asio::connect(connectionSocket, resolver.resolve(tcp::resolver::query(host, port)));
+        asio::connect(tcpSocket, resolver.resolve(asio::ip::tcp::resolver::query(host, port)));
+        connectionSocket = std::move(tcpSocket);
     } catch (const asio::system_error &e) {
         cerr << "Connection to '" << host << ":" << port << "' failed: " << e.what() << endl;
         return 1;

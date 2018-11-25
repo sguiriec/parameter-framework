@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2011-2015, Intel Corporation
+ * Copyright (c) 2018, Renault s.a.s
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -129,7 +130,7 @@ size_t CMessage::getRemainingDataSize() const
 // Send/Receive
 CMessage::Result CMessage::serialize(Socket &&socket, bool bOut, string &strError)
 {
-    asio::ip::tcp::socket &asioSocket = socket.get();
+    auto &asioSocket = socket.get();
 
     if (bOut) {
         asio::error_code ec;

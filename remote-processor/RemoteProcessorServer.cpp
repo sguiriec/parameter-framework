@@ -57,23 +57,27 @@ bool CRemoteProcessorServer::start(string &error)
     using namespace asio;
 
     try {
+        generic::stream_protocol::endpoint endpoint;
         uint16_t port;
 
-        if (!convertTo(_bindAddress, port)) {
+        if (convertTo(_bindAddress, port)) {
+            endpoint = ip::tcp::endpoint(ip::tcp::v6(), port);
+        } else {
             throw std::invalid_argument("unable to convert bind Address: " + _bindAddress);
         }
-        ip::tcp::endpoint endpoint(ip::tcp::v6(), port);
 
         _acceptor.open(endpoint.protocol());
 
-        _acceptor.set_option(ip::tcp::acceptor::reuse_address(true));
-        _acceptor.set_option(asio::socket_base::linger(true, 0));
+        if (endpoint.protocol().protocol() == ASIO_OS_DEF(IPPROTO_TCP)) {
+            _acceptor.set_option(ip::tcp::acceptor::reuse_address(true));
+        }
+        _acceptor.set_option(socket_base::linger(true, 0));
         _acceptor.set_option(socket_base::enable_connection_aborted(true));
 
         _acceptor.bind(endpoint);
         _acceptor.listen();
     } catch (std::exception &e) {
-        error = "Unable to listen on port " + _bindAddress + ": " + e.what();
+        error = "Unable to listen on " + _bindAddress + ": " + e.what();
         return false;
     }
 
@@ -95,7 +99,10 @@ void CRemoteProcessorServer::acceptRegister(IRemoteCommandHandler &commandHandle
             return;
         }
 
-        _socket.set_option(asio::ip::tcp::no_delay(true));
+        const auto &endpoint = _socket.local_endpoint();
+        if (endpoint.protocol().protocol() == ASIO_OS_DEF(IPPROTO_TCP)) {
+            _socket.set_option(asio::ip::tcp::no_delay(true));
+        }
         handleNewConnection(commandHandler);
 
         _socket.close();

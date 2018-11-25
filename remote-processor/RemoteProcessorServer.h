@@ -59,6 +59,6 @@ private:
     std::string _bindAddress;
 
     asio::io_service _io_service;
-    asio::ip::tcp::acceptor _acceptor;
-    asio::ip::tcp::socket _socket;
+    asio::basic_socket_acceptor<asio::generic::stream_protocol> _acceptor;
+    asio::generic::stream_protocol::socket _socket;
 };
