@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2011-2014, Intel Corporation
+ * Copyright (c) 2018, Renault s.a.s
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -262,7 +263,6 @@ bool CXmlElement::CChildIterator::next(CXmlElement &xmlChildElement)
     return false;
 }
 
-template bool CXmlElement::getAttribute(const std::string &name, std::string &value) const;
 template bool CXmlElement::getAttribute(const std::string &name, bool &value) const;
 template bool CXmlElement::getAttribute(const std::string &name, signed char &value) const;
 template bool CXmlElement::getAttribute(const std::string &name, unsigned char &value) const;
@@ -277,8 +277,6 @@ template bool CXmlElement::getAttribute(const std::string &name, unsigned long l
 template bool CXmlElement::getAttribute(const std::string &name, float &value) const;
 template bool CXmlElement::getAttribute(const std::string &name, double &value) const;
 
-template void CXmlElement::setAttribute(const std::string &name, const std::string &value);
-template void CXmlElement::setAttribute(const std::string &name, const bool &value);
 template void CXmlElement::setAttribute(const std::string &name, const signed char &value);
 template void CXmlElement::setAttribute(const std::string &name, const unsigned char &value);
 template void CXmlElement::setAttribute(const std::string &name, const short &value);
